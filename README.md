@@ -69,7 +69,7 @@ Pipeline không tự động gọi crawler PNJ. File `src/pnj_gold_parser.py` ch
 
 ## Ghi nhận đóng góp
 
-`src/pnj_gold_parser.py` được kế thừa từ file ban đầu `pnj_gold.py`, hình thành nhờ sự hỗ trợ ban đầu của anh **Nguyễn Tiến Thành**. Từ nền tảng đó, **Nguyễn * Huệ Trang** tiếp tục chỉnh sửa và phát triển crawler để phù hợp với phạm vi, cấu trúc và yêu cầu dữ liệu của dự án GoldVN.
+`src/pnj_gold_parser.py` được kế thừa từ file ban đầu `pnj_gold.py`, hình thành nhờ sự hỗ trợ ban đầu của anh **Nguyễn Tiến Thành** ([GitHub: @ysoseriouz](https://github.com/ysoseriouz)). Từ nền tảng đó, **Nguyễn * Huệ Trang** tiếp tục chỉnh sửa và phát triển crawler để phù hợp với phạm vi, cấu trúc và yêu cầu dữ liệu của dự án GoldVN.
 
 Nếu bốn file raw đã có sẵn, chỉ làm sạch và tính return:
 
