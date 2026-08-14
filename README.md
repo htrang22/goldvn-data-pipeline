@@ -111,3 +111,15 @@ python3 -m unittest discover -v
 ```
 
 Hai notebook trong `notebooks/` được giữ làm tài liệu đối chiếu; pipeline chính nằm trong các module Python ở `src/`.
+
+## Lưu ý về dữ liệu và quyền sử dụng
+
+Repository này không lưu trữ hoặc phân phối file CSV chứa dữ liệu lịch sử giá vàng được thu thập từ nguồn của PNJ. Người dùng phải tự chuẩn bị file dữ liệu đầu vào và đặt tại `data/raw/3y-sjc.csv` để chạy pipeline.
+
+Thông tin giá vàng được tham chiếu từ dữ liệu công khai của PNJ. Tên PNJ, nhãn hiệu và các quyền liên quan thuộc về chủ sở hữu tương ứng. Dự án này không được PNJ tài trợ, chứng thực hoặc liên kết chính thức.
+
+Chủ dự án chưa nhận được giấy phép hoặc văn bản xác nhận từ PNJ cho phép tái phân phối bộ dữ liệu lịch sử giá vàng. Việc cung cấp mã crawler trong repository chỉ nhằm mục đích tham khảo kỹ thuật và ghi nhận phương pháp hình thành dataset; mã nguồn này không cấu thành sự cho phép thu thập, sao chép hoặc tái phân phối dữ liệu từ bất kỳ nguồn nào.
+
+Người sử dụng có trách nhiệm tự bảo đảm việc thu thập và sử dụng dữ liệu tuân thủ điều khoản của nguồn dữ liệu, quy định về quyền sở hữu trí tuệ và pháp luật áp dụng. Mọi giấy phép của repository, nếu có, chỉ áp dụng cho mã nguồn và tài liệu do tác giả dự án tạo ra, không áp dụng cho dữ liệu hoặc tài sản thuộc bên thứ ba.
+
+Dữ liệu và kết quả xử lý được cung cấp cho mục đích nghiên cứu, không bảo đảm tuyệt đối về tính chính xác, đầy đủ hoặc cập nhật và không cấu thành khuyến nghị đầu tư.
