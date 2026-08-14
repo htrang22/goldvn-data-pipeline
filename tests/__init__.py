@@ -1,0 +1,1 @@
+"""Kiểm thử pipeline GoldVN."""
