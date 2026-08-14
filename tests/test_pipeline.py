@@ -9,6 +9,8 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 
+from config import RAW_GOLD_FILE
+from run_pipeline import build_parser
 from src.calculate_returns import (
     create_bitcoin_returns,
     create_gold_returns,
@@ -234,6 +236,13 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(calls["end"], "2023-08-02")
         self.assertEqual(len(downloaded), 1)
         self.assertTrue(output.exists())
+
+    def test_gold_is_a_user_supplied_csv_not_a_crawler_option(self) -> None:
+        args = build_parser().parse_args([])
+
+        self.assertEqual(RAW_GOLD_FILE.name, "3y-sjc.csv")
+        self.assertFalse(hasattr(args, "force_gold"))
+        self.assertFalse(hasattr(args, "gold_delay_min"))
 
 
 if __name__ == "__main__":

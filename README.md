@@ -15,7 +15,7 @@ Khoảng dữ liệu mặc định: từ `2023-08-01` đến hết `2026-08-01`.
 | VN-Index | KBS thông qua `vnstock` | `VNINDEX` |
 | Bitcoin | Yahoo Finance | `BTC-USD` |
 | USD/VND | Yahoo Finance | `VND=X` |
-| Vàng | PNJ | SJC, TPHCM |
+| Vàng | File CSV do người dùng cung cấp | SJC, TPHCM |
 
 ## Cấu trúc project
 
@@ -53,13 +53,23 @@ python3 -m pip install -r requirements.txt
 
 ## Chạy pipeline
 
-Tải lại toàn bộ dữ liệu và xử lý:
+Trước tiên, đặt file CSV giá vàng đã tải vào:
+
+```text
+data/raw/3y-sjc.csv
+```
+
+Sau đó tải VN-Index, BTC-USD, USD/VND và xử lý cả bốn chuỗi:
 
 ```bash
 python3 run_pipeline.py
 ```
 
-Crawler PNJ hỗ trợ tiếp tục từ file đang có. Quá trình tải ba năm dữ liệu vàng có delay giữa các request nên sẽ mất thời gian; không xóa `data/raw/sjc_gold.csv` nếu muốn tiếp tục lần chạy trước.
+Pipeline không tự động gọi crawler PNJ. File `src/pnj_gold_parser.py` chỉ được giữ làm căn cứ về nguồn dữ liệu và là công cụ tùy chọn cho người muốn tự crawl. Cách này tránh làm quy trình chính phụ thuộc vào API hoặc giao diện PNJ có thể thay đổi theo thời gian.
+
+## Ghi nhận đóng góp
+
+`src/pnj_gold_parser.py` được kế thừa từ file ban đầu `pnj_gold.py`, hình thành nhờ sự hỗ trợ ban đầu của anh **Nguyễn Tiến Thành** ([GitHub: @ysoseriouz](https://github.com/ysoseriouz)). Từ nền tảng đó, **Nguyễn * Huệ Trang** tiếp tục chỉnh sửa và phát triển crawler để phù hợp với phạm vi, cấu trúc và yêu cầu dữ liệu của dự án GoldVN.
 
 Nếu bốn file raw đã có sẵn, chỉ làm sạch và tính return:
 
@@ -74,13 +84,15 @@ Bốn file cần có trong `data/raw/` khi dùng `--skip-download`:
 | `vnindex.csv` | `time`, `close` (hoặc `Date`, `vnindex_price`) |
 | `bitcoin_usd.csv` | `Date`, `Open`, `High`, `Low`, `Close` (chấp nhận `btc_price`) |
 | `usdvnd.csv` | `Date`, `Close` (chấp nhận `usdvnd_rate`) |
-| `sjc_gold.csv` | `query_date`, `location`, `product`, `buy`, `sell` |
+| `3y-sjc.csv` | `query_date`, `location`, `product`, `buy`, `sell` |
 
 Có thể thay khoảng ngày mặc định:
 
 ```bash
 python3 run_pipeline.py --start-date 2023-08-01 --end-date 2026-08-01
 ```
+
+> **Lưu ý về khoảng ngày:** `run_pipeline.py` chỉ tự tải VN-Index, BTC-USD và USD/VND. Dữ liệu vàng luôn được đọc từ file có sẵn `data/raw/3y-sjc.csv`, sau đó được lọc theo `--start-date` và `--end-date`. Vì vậy, file CSV vàng phải bao phủ toàn bộ khoảng ngày cần nghiên cứu trước khi chạy. Nếu mở rộng khoảng ngày nhưng không thay file vàng tương ứng, pipeline sẽ không thể tạo thêm quan sát vàng cho phần thời gian còn thiếu.
 
 ## Kết quả
 
