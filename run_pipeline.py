@@ -35,7 +35,6 @@ from src.calculate_returns import (
 from src.clean_data import clean_bitcoin, clean_gold, clean_usdvnd, clean_vnindex
 from src.download_market_data import download_bitcoin, download_usdvnd
 from src.download_vnindex import download_vnindex
-from src.pnj_gold_parser import LOCATIONS, PRODUCTS, PNJGoldCrawler, generate_dates
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -49,24 +48,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Không tải lại; dùng bốn CSV hiện có trong data/raw.",
     )
-    parser.add_argument(
-        "--force-gold",
-        action="store_true",
-        help="Crawl lại cả các ngày vàng đã có trong file raw.",
-    )
-    parser.add_argument("--gold-delay-min", type=float, default=1.0)
-    parser.add_argument("--gold-delay-max", type=float, default=3.0)
     return parser
 
 
 def download_all(
     start_date: str,
     end_date: str,
-    force_gold: bool,
-    gold_delay_min: float,
-    gold_delay_max: float,
 ) -> None:
-    print("[1/4] Tải VN-Index...")
+    """Tải ba chuỗi online; giá vàng luôn do người dùng cung cấp qua CSV."""
+
+    print("[1/3] Tải VN-Index...")
     download_vnindex(
         RAW_VNINDEX_FILE,
         start_date,
@@ -74,26 +65,13 @@ def download_all(
         symbol=VNINDEX_SYMBOL,
         source=VNINDEX_SOURCE,
     )
-    print("[2/4] Tải BTC-USD...")
+    print("[2/3] Tải BTC-USD...")
     download_bitcoin(
         RAW_BITCOIN_FILE, start_date, end_date, ticker=BTC_TICKER
     )
-    print("[3/4] Tải USD/VND...")
+    print("[3/3] Tải USD/VND...")
     download_usdvnd(
         RAW_USDVND_FILE, start_date, end_date, ticker=USDVND_TICKER
-    )
-    print("[4/4] Crawl vàng SJC tại TPHCM...")
-    crawler = PNJGoldCrawler(
-        output=str(RAW_GOLD_FILE),
-        mode="snapshot",
-        products={PRODUCTS[GOLD_PRODUCT]},
-        locations={LOCATIONS[GOLD_LOCATION]},
-        min_delay=gold_delay_min,
-        max_delay=gold_delay_max,
-    )
-    crawler.crawl(
-        generate_dates(start_date=start_date, end_date=end_date),
-        force=force_gold,
     )
 
 
@@ -127,8 +105,8 @@ def process_all(start_date: str, end_date: str) -> None:
         CLEAN_GOLD_FILE,
         start_date,
         end_date,
-        product=PRODUCTS[GOLD_PRODUCT],
-        location=LOCATIONS[GOLD_LOCATION],
+        product=GOLD_PRODUCT,
+        location=GOLD_LOCATION,
     )
 
     print("Quy đổi BTC sang VND và tính log-return...")
@@ -155,18 +133,15 @@ def main() -> None:
         raise ValueError("Ngày phải có định dạng YYYY-MM-DD.") from exc
     if start_date > end_date:
         raise ValueError("--start-date phải nhỏ hơn hoặc bằng --end-date.")
-    if args.gold_delay_min < 0 or args.gold_delay_max < args.gold_delay_min:
-        raise ValueError("Khoảng delay của crawler vàng không hợp lệ.")
-
     ensure_data_directories()
-    if not args.skip_download:
-        download_all(
-            args.start_date,
-            args.end_date,
-            args.force_gold,
-            args.gold_delay_min,
-            args.gold_delay_max,
+    if not RAW_GOLD_FILE.exists():
+        raise FileNotFoundError(
+            "Hãy đặt file giá vàng đã tải vào "
+            f"{RAW_GOLD_FILE} trước khi chạy pipeline. "
+            "Crawler PNJ trong src/ chỉ là công cụ tham chiếu và không được chạy tự động."
         )
+    if not args.skip_download:
+        download_all(args.start_date, args.end_date)
     process_all(args.start_date, args.end_date)
 
 
