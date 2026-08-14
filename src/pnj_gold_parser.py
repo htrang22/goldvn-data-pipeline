@@ -5,7 +5,7 @@ PNJ Gold Price Crawler
 Ghi nhận:
 - File này được kế thừa từ parser ban đầu `pnj_gold.py`, hình thành nhờ
   sự hỗ trợ ban đầu của anh Nguyễn Tiến Thành.
-- Nguyễn Huệ Trang tiếp tục chỉnh sửa và phát triển để phù hợp với phạm vi,
+- Nguyễn * Huệ Trang tiếp tục chỉnh sửa và phát triển để phù hợp với phạm vi,
   cấu trúc và yêu cầu dữ liệu của dự án GoldVN.
 
 Chức năng chính:
