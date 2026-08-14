@@ -92,6 +92,8 @@ Có thể thay khoảng ngày mặc định:
 python3 run_pipeline.py --start-date 2023-08-01 --end-date 2026-08-01
 ```
 
+> **Lưu ý về khoảng ngày:** `run_pipeline.py` chỉ tự tải VN-Index, BTC-USD và USD/VND. Dữ liệu vàng luôn được đọc từ file có sẵn `data/raw/3y-sjc.csv`, sau đó được lọc theo `--start-date` và `--end-date`. Vì vậy, file CSV vàng phải bao phủ toàn bộ khoảng ngày cần nghiên cứu trước khi chạy. Nếu mở rộng khoảng ngày nhưng không thay file vàng tương ứng, pipeline sẽ không thể tạo thêm quan sát vàng cho phần thời gian còn thiếu.
+
 ## Kết quả
 
 Pipeline tạo ba file trong `data/final/`:
