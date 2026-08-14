@@ -17,6 +17,15 @@ Khoảng dữ liệu mặc định: từ `2023-08-01` đến hết `2026-08-01`.
 | USD/VND | Yahoo Finance | `VND=X` |
 | Vàng | File CSV do người dùng cung cấp | SJC, TPHCM |
 
+## Dự án sử dụng dữ liệu đầu ra
+
+Ba dataset cuối do pipeline tạo ra được sử dụng trong dự án:
+
+- [model-1-sep-assets](https://github.com/htrang22/model-1-sep-assets)
+
+Repository trên thực hiện phân tích ARMA-EGARCH, DCC-GARCH và
+Diebold-Yılmaz đối với Bitcoin, vàng SJC và VN-Index.
+
 ## Cấu trúc project
 
 ```text
