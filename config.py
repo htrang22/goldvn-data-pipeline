@@ -28,9 +28,9 @@ CLEAN_BITCOIN_FILE = PROCESSED_DIR / "bitcoin_usd_clean.csv"
 CLEAN_USDVND_FILE = PROCESSED_DIR / "usdvnd_clean.csv"
 CLEAN_GOLD_FILE = PROCESSED_DIR / "sjc_gold_clean.csv"
 
-FINAL_BITCOIN_FILE = FINAL_DIR / "3y-bitcoin-vnd-returns.csv"
-FINAL_GOLD_FILE = FINAL_DIR / "3y-gold-returns.csv"
-FINAL_VNINDEX_FILE = FINAL_DIR / "3y-vnindex-returns.csv"
+FINAL_BITCOIN_FILE = FINAL_DIR / "bitcoin-vnd-returns.csv"
+FINAL_GOLD_FILE = FINAL_DIR / "gold-returns.csv"
+FINAL_VNINDEX_FILE = FINAL_DIR / "vnindex-returns.csv"
 
 
 def ensure_data_directories() -> None:

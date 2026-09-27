@@ -12,4 +12,7 @@ data/processed/*
 !data/processed/.gitkeep
 data/final/*
 !data/final/.gitkeep
-
+!data/final/run_manifest.json
+data/interim/*
+!data/interim/.gitkeep
+check.py

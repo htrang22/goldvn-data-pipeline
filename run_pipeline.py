@@ -13,6 +13,7 @@ from config import (
     CLEAN_VNINDEX_FILE,
     END_DATE,
     FINAL_BITCOIN_FILE,
+    FINAL_DIR,
     FINAL_GOLD_FILE,
     FINAL_VNINDEX_FILE,
     GOLD_LOCATION,
@@ -35,6 +36,7 @@ from src.calculate_returns import (
 from src.clean_data import clean_bitcoin, clean_gold, clean_usdvnd, clean_vnindex
 from src.download_market_data import download_bitcoin, download_usdvnd
 from src.download_vnindex import download_vnindex
+from src.manifest import write_run_manifest
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -120,6 +122,24 @@ def process_all(start_date: str, end_date: str) -> None:
     print(f"- BTC-VND: {len(bitcoin):,} dòng -> {FINAL_BITCOIN_FILE}")
     print(f"- Vàng SJC: {len(gold):,} dòng -> {FINAL_GOLD_FILE}")
     print(f"- VN-Index: {len(vnindex):,} dòng -> {FINAL_VNINDEX_FILE}")
+    
+    write_run_manifest(
+        raw_files={
+            "vnindex": RAW_VNINDEX_FILE,
+            "bitcoin": RAW_BITCOIN_FILE,
+            "usdvnd": RAW_USDVND_FILE,
+            "gold": RAW_GOLD_FILE,
+        },
+        final_files={
+            "bitcoin_returns": FINAL_BITCOIN_FILE,
+            "gold_returns": FINAL_GOLD_FILE,
+            "vnindex_returns": FINAL_VNINDEX_FILE,
+        },
+        start_date=start_date,
+        end_date=end_date,
+        manifest_path=FINAL_DIR / "run_manifest.json",
+    )
+    print(f"Đã ghi manifest: {FINAL_DIR / 'run_manifest.json'}")
 
 
 def main() -> None:
