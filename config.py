@@ -21,7 +21,7 @@ GOLD_LOCATION = "TPHCM"
 RAW_VNINDEX_FILE = RAW_DIR / "vnindex.csv"
 RAW_BITCOIN_FILE = RAW_DIR / "bitcoin_usd.csv"
 RAW_USDVND_FILE = RAW_DIR / "usdvnd.csv"
-RAW_GOLD_FILE = RAW_DIR / "3y-sjc.csv"
+RAW_GOLD_FILE = RAW_DIR / "sjc.csv"
 
 CLEAN_VNINDEX_FILE = PROCESSED_DIR / "vnindex_clean.csv"
 CLEAN_BITCOIN_FILE = PROCESSED_DIR / "bitcoin_usd_clean.csv"

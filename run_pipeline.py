@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import date
+from src.manifest import write_run_manifest
 
 from config import (
     BTC_TICKER,
@@ -140,6 +141,23 @@ def process_all(start_date: str, end_date: str) -> None:
         manifest_path=FINAL_DIR / "run_manifest.json",
     )
     print(f"Đã ghi manifest: {FINAL_DIR / 'run_manifest.json'}")
+
+    write_run_manifest(
+        raw_files={
+            "vnindex": RAW_VNINDEX_FILE,
+            "bitcoin": RAW_BITCOIN_FILE,
+            "usdvnd": RAW_USDVND_FILE,
+            "gold": RAW_GOLD_FILE,
+        },
+        final_files={
+            "bitcoin_returns": FINAL_BITCOIN_FILE,
+            "gold_returns": FINAL_GOLD_FILE,
+            "vnindex_returns": FINAL_VNINDEX_FILE,
+        },
+        start_date=start_date,   # dùng tham số hàm, không phải args
+        end_date=end_date,
+        manifest_path=FINAL_DIR / "run_manifest.json",
+    )
 
 
 def main() -> None:

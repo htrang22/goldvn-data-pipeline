@@ -2,7 +2,7 @@ numpy
 pandas
 matplotlib
 yfinance
+tqdm
+--extra-index-url https://vnstocks.com/api/simple
 vnstock
 requests
-tqdm
-

@@ -8,6 +8,8 @@ from typing import Iterable, Union
 import numpy as np
 import pandas as pd
 
+from src.gold_normalizer import normalize_gold_columns
+
 
 PathLike = Union[str, Path]
 
@@ -150,6 +152,16 @@ def clean_vnindex(
     )
     return _save_clean(data, output_path)
 
+# Clean gold data
+from src.gold_normalizer import normalize_gold_columns, compute_gold_price
+    
+def validate_gold_coverage(df, start_date, end_date):
+    min_date, max_date = df["Date"].min(), df["Date"].max()
+    if min_date > pd.Timestamp(start_date) or max_date < pd.Timestamp(end_date):
+        raise ValueError(
+            f"File vàng chỉ có dữ liệu {min_date.date()}-{max_date.date()}, "
+            f"không đủ phủ khoảng yêu cầu {start_date}-{end_date}."
+        )
 
 def clean_gold(
     input_path: PathLike,
@@ -159,33 +171,34 @@ def clean_gold(
     product: str = "SJC",
     location: str = "TPHCM",
 ) -> pd.DataFrame:
-    """Lọc đúng SJC/TPHCM và tính midpoint từ giá mua, giá bán."""
-
+    """Chuẩn hóa cột, tính gold_price, lọc SJC/TPHCM nếu có."""    
+    
     data = pd.read_csv(input_path)
-    _require_columns(
-        data,
-        ["query_date", "location", "product", "buy", "sell"],
-        "Vàng",
-    )
-    data = data.loc[
-        data["product"].eq(product) & data["location"].eq(location)
-    ].copy()
-    if data.empty:
-        raise ValueError(
-            f"Không tìm thấy dữ liệu vàng product={product!r}, location={location!r}."
-        )
+    data = normalize_gold_columns(data)
+    
+    for column in ["buy", "sell", "close"]:
+        if column in data.columns:
+            data[column] = pd.to_numeric(data[column], errors="coerce") 
+    
+    data = compute_gold_price(data)
+    
+    date_str = data["date"].astype(str).str.replace(".0", "", regex=False)
+    parsed = pd.to_datetime(date_str, format="%Y%m%d", errors="coerce")
+    parsed = parsed.fillna(pd.to_datetime(data["date"], errors="coerce"))  # fallback ISO date
+    data["Date"] = parsed
 
-    query_dates = data["query_date"].astype(str).str.replace(".0", "", regex=False)
-    data["Date"] = pd.to_datetime(
-        query_dates, format="%Y%m%d", errors="coerce"
-    )
-    for column in ["buy", "sell"]:
-        data[column] = pd.to_numeric(data[column], errors="coerce")
     data = data.replace([np.inf, -np.inf], np.nan)
-    data = data.dropna(subset=["Date", "buy", "sell"])
+    data = data.dropna(subset=["Date", "gold_price"])
     data = data.loc[
         (data["buy"] > 0) & (data["sell"] > 0) & (data["sell"] >= data["buy"])
     ].copy()
+
+    if data["location"].notna().any() and data["product"].notna().any():
+        data = data.loc[
+            data["product"].eq(product) & data["location"].eq(location)
+        ].copy()
+
+    validate_gold_coverage(data, start_date, end_date)
     data = _limit_date_range(data, start_date, end_date)
 
     sort_columns = ["Date"]
@@ -195,6 +208,6 @@ def clean_gold(
             sort_columns.append(column)
     data = data.sort_values(sort_columns, kind="stable")
     data = data.drop_duplicates(subset="Date", keep="last").reset_index(drop=True)
-    data["gold_price"] = (data["buy"] + data["sell"]) / 2
+
     data = data[["Date", "location", "product", "buy", "sell", "gold_price"]]
     return _save_clean(data, output_path)

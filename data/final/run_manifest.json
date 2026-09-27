@@ -1,0 +1,41 @@
+{
+  "run_timestamp_utc": "2026-09-27T05:06:10.340144+00:00",
+  "start_date": "2020-02-03",
+  "end_date": "2026-02-02",
+  "raw_inputs": {
+    "vnindex": {
+      "path": "/Users/nguyenhuetrang/Documents/GitHub/goldvn-data-pipeline/data/raw/vnindex.csv",
+      "sha256": "03a8b5e2d06c17672012a9b0d2c7bd49279bfa282434065787f8869664bdd5dd",
+      "modified_at": "2026-09-27T05:06:09.058417+00:00"
+    },
+    "bitcoin": {
+      "path": "/Users/nguyenhuetrang/Documents/GitHub/goldvn-data-pipeline/data/raw/bitcoin_usd.csv",
+      "sha256": "b2a03550f931a73aa9bc31f97dc46d212c25548400ae44a0e458ab83e35f71af",
+      "modified_at": "2026-09-27T05:06:09.867133+00:00"
+    },
+    "usdvnd": {
+      "path": "/Users/nguyenhuetrang/Documents/GitHub/goldvn-data-pipeline/data/raw/usdvnd.csv",
+      "sha256": "3c88867d2ebeced8cea707a3911555f12702d426187e69486ccce3a1d37e484e",
+      "modified_at": "2026-09-27T05:06:10.215524+00:00"
+    },
+    "gold": {
+      "path": "/Users/nguyenhuetrang/Documents/GitHub/goldvn-data-pipeline/data/raw/sjc.csv",
+      "sha256": "7101c700444fd83bf5ad6aa88b473e4b043bf63efe49d34ae9fa0a35bed9457b",
+      "modified_at": "2026-09-27T04:25:54.618359+00:00"
+    }
+  },
+  "final_outputs": {
+    "bitcoin_returns": {
+      "path": "/Users/nguyenhuetrang/Documents/GitHub/goldvn-data-pipeline/data/final/bitcoin-vnd-returns.csv",
+      "sha256": "509086d2eec1c727021ffe325ba7b342cc3f718f1bca8eb4c64306bec9990ccd"
+    },
+    "gold_returns": {
+      "path": "/Users/nguyenhuetrang/Documents/GitHub/goldvn-data-pipeline/data/final/gold-returns.csv",
+      "sha256": "f8be08d4ca78bd0647967599e39a990e522147a463bd4bfcea512e9dfd7b37fb"
+    },
+    "vnindex_returns": {
+      "path": "/Users/nguyenhuetrang/Documents/GitHub/goldvn-data-pipeline/data/final/vnindex-returns.csv",
+      "sha256": "9d348abfd45ed4e3b8049cddf8c4f4237f7ae83bd0ef8cf04c3d57f2e43011f0"
+    }
+  }
+}
