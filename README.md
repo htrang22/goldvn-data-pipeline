@@ -15,7 +15,7 @@ Khoảng dữ liệu mặc định: từ `2023-08-01` đến hết `2026-08-01`.
 | VN-Index | KBS thông qua `vnstock` | `VNINDEX` |
 | Bitcoin | Yahoo Finance | `BTC-USD` |
 | USD/VND | Yahoo Finance | `VND=X` |
-| Vàng | File CSV do người dùng cung cấp | SJC, TPHCM |
+| Vàng | File CSV do người dùng cung cấp | SJC, TPHCM (hoặc dữ liệu tự chuẩn bị khác, xem bên dưới) |
 
 ## Dự án sử dụng dữ liệu đầu ra
 
@@ -40,17 +40,20 @@ goldvn-data-pipeline/
 │   ├── download_vnindex.py
 │   ├── download_market_data.py
 │   ├── pnj_gold_parser.py
+│   ├── gold_normalizer.py
 │   ├── clean_data.py
 │   └── calculate_returns.py
+│   └── manifest.py
 ├── data/
 │   ├── raw/
+│   ├── interim/
 │   ├── processed/
 │   └── final/
 ├── notebooks/
 └── tests/
 ```
 
-Ba thư mục dữ liệu không lưu CSV trên GitHub. Khi chạy pipeline, chúng lần lượt chứa dữ liệu gốc, dữ liệu đã làm sạch và ba bộ dữ liệu cuối dùng cho mô hình.
+4 thư mục dữ liệu không lưu CSV trên GitHub (ngoại trừ `data/final/run_manifest.json`, xem mục "Manifest" bên dưới). Khi chạy pipeline, chúng lần lượt chứa dữ liệu gốc, dữ liệu đã làm sạch và ba bộ dữ liệu cuối dùng cho mô hình.
 
 ## Cài đặt
 
@@ -59,16 +62,27 @@ python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
+**Lưu ý:** `vnstock` không nằm trên PyPI mặc định. `requirements.txt` đã có sẵn dòng `--extra-index-url https://vnstocks.com/api/simple`, nên chỉ cần chạy đúng lệnh `pip install -r requirements.txt` ở trên là đủ, không cần cài `vnstock` riêng.
 
 ## Chạy pipeline
 
 Trước tiên, đặt file CSV giá vàng đã tải vào:
 
 ```text
-data/raw/3y-sjc.csv
+data/raw/sjc.csv
 ```
+File này chấp nhận 1 trong 3 định dạng cột:
 
-Sau đó tải VN-Index, BTC-USD, USD/VND và xử lý cả bốn chuỗi:
+| Schema | Cột |
+| --- | --- |
+| PNJ gốc | `query_date`, `location`, `product`, `buy`, `sell` |
+| Tự chuẩn bị (buy/sell) | `Date`, `Buy`, `Sell` |
+| Tự chuẩn bị (chỉ giá đóng cửa) | `Date`, `Close` |
+
+Nếu dùng schema có `buy`/`sell`, `gold_price` được tính bằng `(buy + sell) / 2`.
+Nếu chỉ có `Close`, `gold_price` = `Close`. Nếu file có cột `location`/`product`, pipeline sẽ lọc đúng theo tham số `--gold-location`/`--gold-product` (mặc định `TPHCM`/`SJC`); nếu không có 2 cột này, bước lọc được bỏ qua.
+
+Sau đó tải VN-Index, BTC-USD, USD/VND và xử lý cả 4 chuỗi:
 
 ```bash
 python3 run_pipeline.py
@@ -93,7 +107,8 @@ Bốn file cần có trong `data/raw/` khi dùng `--skip-download`:
 | `vnindex.csv` | `time`, `close` (hoặc `Date`, `vnindex_price`) |
 | `bitcoin_usd.csv` | `Date`, `Open`, `High`, `Low`, `Close` (chấp nhận `btc_price`) |
 | `usdvnd.csv` | `Date`, `Close` (chấp nhận `usdvnd_rate`) |
-| `3y-sjc.csv` | `query_date`, `location`, `product`, `buy`, `sell` |
+| `sjc.csv` | Xem bảng 3 schema ở mục "Chạy pipeline" phía trên |
+
 
 Có thể thay khoảng ngày mặc định:
 
@@ -107,19 +122,28 @@ python3 run_pipeline.py --start-date 2023-08-01 --end-date 2026-08-01
 
 Pipeline tạo ba file trong `data/final/`:
 
-- `3y-bitcoin-vnd-returns.csv`
-- `3y-gold-returns.csv`
-- `3y-vnindex-returns.csv`
+- `bitcoin-vnd-returns.csv`
+- `gold-returns.csv`
+- `vnindex-returns.csv`
 
 BTC giữ nguyên lịch giao dịch hằng ngày. Tỷ giá USD/VND thiếu vào cuối tuần hoặc ngày nghỉ được forward-fill từ quan sát gần nhất. Vàng và VN-Index được tính return trên lịch quan sát riêng; không inner-join ba chuỗi trước khi tính return.
+
+## Manifest
+
+Mỗi lần chạy `run_pipeline.py` thành công, một file `data/final/run_manifest.json` được tạo (hoặc ghi đè), lưu lại:
+- Thời điểm chạy (UTC).
+- `--start-date`/`--end-date` đã dùng.
+- SHA256 và thời điểm chỉnh sửa của từng file trong `data/raw/`.
+- SHA256 của từng file kết quả trong `data/final/`.
+
+File này giúp xác định chính xác dữ liệu đầu vào nào đã tạo ra một bộ kết quả cụ thể, kể cả khi `data/raw/` sau đó bị ghi đè bởi lần chạy khác.
 
 ## Kiểm thử
 
 ```bash
 python3 -m unittest discover -v
 ```
-
-Hai notebook trong `notebooks/` được giữ làm tài liệu đối chiếu; pipeline chính nằm trong các module Python ở `src/`.
+`tests/test_clean_gold.py` kiểm tra hàm `clean_gold()` với cả 3 schema vàng (PNJ gốc, `Date+Buy+Sell`, `Date+Close`), cùng các trường hợp lỗi (thiếu cột giá, dữ liệu không đủ phủ khoảng ngày yêu cầu).
 
 ## Lưu ý về dữ liệu và quyền sử dụng
 
