@@ -49,7 +49,6 @@ goldvn-data-pipeline/
 │   ├── interim/
 │   ├── processed/
 │   └── final/
-├── notebooks/
 └── tests/
 ```
 
